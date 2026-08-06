@@ -1,0 +1,356 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* hide scrollbar but keep scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+.animate-scaleReveal {
+  animation: scaleReveal 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Blinking Cursor for Typing Animation */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 0.8s infinite;
+}
+
+/* Fallbacks for Dynamic Viewport Height (dvh) in older browsers */
+@utility min-h-dvh {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+@utility h-dvh {
+  height: 100vh;
+  height: 100dvh;
+}
+
+@utility max-h-dvh {
+  max-height: 100vh;
+  max-height: 100dvh;
+}
+
+.max-h-modal {
+  max-height: 85vh;
+  max-height: 85dvh;
+}
+
+@keyframes gridMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 3rem 3rem;
+  }
+}
+
+.animate-grid-move {
+  animation: gridMove 24s linear infinite;
+}
+
+/* ===== Interactive Features Orbit Wheel ===== */
+.orbit-container {
+  position: relative;
+  width: 360px;
+  height: 360px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .orbit-container {
+    width: 280px;
+    height: 280px;
+  }
+}
+
+/* Center Logo Hub */
+.wheel-center {
+  width: 80px;
+  height: 80px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 35px rgba(42, 73, 140, 0.15), 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  z-index: 15;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.wheel-center:hover {
+  transform: scale(1.05);
+  border-color: #2a498c;
+  box-shadow: 0 0 40px rgba(42, 73, 140, 0.25), 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.wheel-logo {
+  width: 42px;
+  height: 42px;
+}
+
+@media (max-width: 480px) {
+  .wheel-center {
+    width: 70px;
+    height: 70px;
+  }
+  .wheel-logo {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Orbit Ring track */
+.wheel-orbit-ring {
+  position: absolute;
+  width: calc(2 * var(--orbit-radius, 140px));
+  height: calc(2 * var(--orbit-radius, 140px));
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.45;
+  --orbit-radius: 140px;
+}
+
+@media (max-width: 480px) {
+  .wheel-orbit-ring {
+    --orbit-radius: 105px;
+  }
+}
+
+/* Rotating Orbit Items Container */
+.wheel-orbit {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  animation: orbit-rotation 45s linear infinite;
+  transform-origin: center center;
+}
+
+/* Individual Orbit Items */
+.orbit-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 52px;
+  height: 52px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  padding: 0;
+  color: #475569;
+  z-index: 10;
+  
+  --orbit-radius: 140px;
+  transform: translate(-50%, -50%) rotate(var(--angle)) translate(var(--orbit-radius)) rotate(calc(-1 * var(--angle)));
+}
+
+@media (max-width: 480px) {
+  .orbit-item {
+    width: 46px;
+    height: 46px;
+    --orbit-radius: 105px;
+  }
+}
+
+.orbit-item:hover {
+  background: #f1f5f9;
+  border-color: #2a498c;
+  color: #2a498c;
+  box-shadow: 0 0 15px rgba(42, 73, 140, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transform: translate(-50%, -50%) rotate(var(--angle)) translate(var(--orbit-radius)) rotate(calc(-1 * var(--angle))) scale(1.1);
+  z-index: 20;
+}
+
+.orbit-item.active {
+  background: #2a498c;
+  border-color: #2a498c;
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(42, 73, 140, 0.35), 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  z-index: 30;
+}
+
+/* Counter-Rotation to keep icons upright */
+.orbit-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  animation: counter-rotation 45s linear infinite;
+  transform-origin: center center;
+}
+
+/* Popup Cloud Positioner */
+.orbit-popup-cloud-positioner {
+  position: absolute;
+  bottom: 68px; /* Offset above the active button */
+  left: 50%;
+  z-index: 100;
+  pointer-events: auto; /* Allow interactions like copying/highlighting text */
+  cursor: default;
+  white-space: normal;
+}
+
+@media (max-width: 480px) {
+  .orbit-popup-cloud-positioner {
+    bottom: 58px;
+  }
+}
+
+/* Tooltip Cloud Speech Bubble Card */
+.orbit-popup-cloud {
+  width: 290px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05), 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  color: #0f172a;
+  text-align: left;
+  position: relative;
+  animation: popup-scale-in 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+  transform-origin: bottom center;
+}
+
+@media (max-width: 480px) {
+  .orbit-popup-cloud {
+    width: 240px;
+    padding: 14px;
+    border-radius: 12px;
+  }
+}
+
+/* Pointing Tip Arrow */
+.popup-arrow {
+  position: absolute;
+  bottom: -6px;
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  transform: translateX(-50%) rotate(45deg);
+  z-index: 5;
+}
+
+.popup-header {
+  margin-bottom: 8px;
+}
+
+.popup-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.popup-desc {
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: #475569;
+}
+
+@media (max-width: 480px) {
+  .popup-title {
+    font-size: 0.85rem;
+  }
+  .popup-desc {
+    font-size: 0.75rem;
+    line-height: 1.45;
+  }
+}
+
+/* Animations */
+@keyframes orbit-rotation {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes counter-rotation {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes popup-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
