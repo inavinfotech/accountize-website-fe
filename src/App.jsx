@@ -35,8 +35,35 @@ import {
   Tooltip
 } from "recharts";
 import Lenis from "lenis";
+import { supabase } from "./lib/supabase";
 
 export default function App() {
+  // Live System Config Pricing States
+  const [proMonthlyPrice, setProMonthlyPrice] = useState(149);
+  const [proAnnualPrice, setProAnnualPrice] = useState(1199);
+
+  // Fetch live system config pricing from Supabase (Synced with Admin Dashboard)
+  useEffect(() => {
+    async function fetchSystemPricing() {
+      try {
+        const { data, error } = await supabase.rpc('get_public_system_config');
+        if (!error && data) {
+          const rawMonthly = data.pro_monthly_price?.raw_value || data.pro_monthly_price?.value || '149';
+          const rawAnnual = data.pro_annual_price?.raw_value || data.pro_annual_price?.value || '1199';
+
+          const monthly = Number(rawMonthly) || 149;
+          const annual = Number(rawAnnual) || 1199;
+
+          setProMonthlyPrice(monthly);
+          setProAnnualPrice(annual);
+        }
+      } catch (err) {
+        console.warn('[Website] System config fetch failed, using fallback pricing:', err);
+      }
+    }
+    fetchSystemPricing();
+  }, []);
+
   // Initialize Lenis Smooth Scroll
   useEffect(() => {
     const lenis = new Lenis({
@@ -45,16 +72,45 @@ export default function App() {
     return () => lenis.destroy();
   }, []);
 
-  // Handle Preloader Fade-out
+  // Handle Preloader Fade-out (Wait for screenshot images to preload)
   useEffect(() => {
-    const preloader = document.getElementById("preloader");
-    if (preloader) {
-      const timer = setTimeout(() => {
+    const screenshotUrls = [
+      "/screenshots/overview-1.webp",
+      "/screenshots/overview-2.webp",
+      "/screenshots/accounts-1.webp",
+      "/screenshots/accounts-2.webp",
+      "/screenshots/accounts-3.webp",
+      "/screenshots/expenses-1.webp",
+      "/screenshots/expenses-2.webp",
+      "/screenshots/transations-1.webp",
+      "/screenshots/audit-1.webp"
+    ];
+
+    let isMounted = true;
+    const preloadPromises = screenshotUrls.map((url) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = resolve;
+        img.onerror = resolve; // proceed gracefully if offline/cached
+      });
+    });
+
+    // Ensure minimum preloader display time for aesthetic smooth entry
+    const minDelayPromise = new Promise((res) => setTimeout(res, 1200));
+
+    Promise.all([...preloadPromises, minDelayPromise]).then(() => {
+      if (!isMounted) return;
+      const preloader = document.getElementById("preloader");
+      if (preloader) {
         preloader.classList.add("opacity-0", "pointer-events-none");
         setTimeout(() => preloader.remove(), 500);
-      }, 1400);
-      return () => clearTimeout(timer);
-    }
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Header Scroll State
@@ -1411,7 +1467,7 @@ export default function App() {
                 >
                   Annual{" "}
                   <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[9px] font-bold">
-                    Save 33%
+                    Save {Math.round(((proMonthlyPrice * 12 - proAnnualPrice) / (proMonthlyPrice * 12)) * 100) > 0 ? Math.round(((proMonthlyPrice * 12 - proAnnualPrice) / (proMonthlyPrice * 12)) * 100) : 33}%
                   </span>
                 </span>
               </div>
@@ -1481,14 +1537,14 @@ export default function App() {
                   Pro Ledger
                 </h3>
                 <div className="mt-3 text-3xl font-bold text-slate-800">
-                  {billingCycle === "monthly" ? "₹149" : "₹1,199"}{" "}
+                  {billingCycle === "monthly" ? formatCurrency(proMonthlyPrice) : formatCurrency(proAnnualPrice)}{" "}
                   <span className="text-xs text-slate-400 font-normal">
                     / {billingCycle === "monthly" ? "month" : "year"}
                   </span>
                 </div>
                 {billingCycle === "annual" && (
                   <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
-                    Just ₹100/month (billed annually)
+                    Just {formatCurrency(Math.round(proAnnualPrice / 12))}/month (billed annually)
                   </p>
                 )}
                 <p className="mt-2 text-[11px] sm:text-xs text-slate-400 leading-relaxed">
