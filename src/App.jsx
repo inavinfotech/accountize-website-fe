@@ -16,10 +16,16 @@ import {
   Users,
   ArrowRight,
   ChevronRight,
+  ChevronLeft,
   X,
   Smartphone,
   Calculator,
-  FileText
+  FileText,
+  Maximize2,
+  Sparkles,
+  CheckCircle2,
+  Zap,
+  LogIn
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -44,7 +50,8 @@ export default function App() {
     const preloader = document.getElementById("preloader");
     if (preloader) {
       const timer = setTimeout(() => {
-        preloader.classList.add("fade-out");
+        preloader.classList.add("opacity-0", "pointer-events-none");
+        setTimeout(() => preloader.remove(), 500);
       }, 1400);
       return () => clearTimeout(timer);
     }
@@ -62,6 +69,152 @@ export default function App() {
 
   // Mobile Menu State
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // App Screenshots Showcase Data & Carousel States
+  const screenshotsList = useMemo(() => [
+    {
+      id: "overview-1",
+      category: "Dashboard",
+      title: "Financial Dashboard & Net Worth Tracker",
+      subtitle: "Real-time ledger overview for your wallets, bank accounts, and monthly cash flow.",
+      src: "/screenshots/overview-1.webp",
+      badge: "Dashboard Overview",
+      features: [
+        "Total net worth and liquid cash breakdown",
+        "Instant quick-actions for logging expenses & settlements",
+        "Real-time monthly spending trend preview"
+      ]
+    },
+    {
+      id: "overview-2",
+      category: "Dashboard",
+      title: "Monthly Analytics & Cash Flow Summary",
+      subtitle: "In-depth breakdown of monthly income, total expenses, and account balances.",
+      src: "/screenshots/overview-2.webp",
+      badge: "Analytics",
+      features: [
+        "Month-by-month cashflow velocity comparison",
+        "Category distribution & top spending areas",
+        "Exportable summary for tax & budget auditing"
+      ]
+    },
+    {
+      id: "accounts-1",
+      category: "Accounts",
+      title: "Custom Wallets & Bank Accounts List",
+      subtitle: "Organize cash in hand, digital wallets, bank accounts, and debtor ledgers in one place.",
+      src: "/screenshots/accounts-1.webp",
+      badge: "Wallets & Accounts",
+      features: [
+        "Categorized by Cash, Online, Bank, and Custom types",
+        "Live running balance for each account",
+        "One-tap account management and balance adjustments"
+      ]
+    },
+    {
+      id: "accounts-2",
+      category: "Accounts",
+      title: "Receivable & Payable Accounts Manager",
+      subtitle: "Track who owes you money and who you need to pay back with automated balances.",
+      src: "/screenshots/accounts-2.webp",
+      badge: "Debtors & Creditors",
+      features: [
+        "Separate receivable and payable balance cards",
+        "Partner transaction history and pending settlements",
+        "Quick settle options with built-in audit checks"
+      ]
+    },
+    {
+      id: "accounts-3",
+      category: "Accounts",
+      title: "Shared Ledger Linking & Token Access",
+      subtitle: "Collaborate on shared accounts and household budgets using secure encrypted tokens.",
+      src: "/screenshots/accounts-3.webp",
+      badge: "Shared Ledgers",
+      features: [
+        "Generates unique shareable web link & QR codes",
+        "Real-time sync between partner ledger entries",
+        "Granular read/write permissions per shared link"
+      ]
+    },
+    {
+      id: "expenses-1",
+      category: "Expenses",
+      title: "Daily Expense Logger & Category Tags",
+      subtitle: "Log daily purchases quickly with built-in math evaluator and category tagging.",
+      src: "/screenshots/expenses-1.webp",
+      badge: "Expense Logger",
+      features: [
+        "Inline quick math split (e.g. 150+200+50)",
+        "Custom tags (Food, Utilities, Travel, Shopping)",
+        "Instant wallet deduction and balance updates"
+      ]
+    },
+    {
+      id: "expenses-2",
+      category: "Expenses",
+      title: "Monthly Settlement & Expense Breakdown",
+      subtitle: "View total monthly spend, category shares, and settlement status.",
+      src: "/screenshots/expenses-2.webp",
+      badge: "Monthly Settlement",
+      features: [
+        "Visual pie charts & category percentage breakdown",
+        "Detailed daily expense log history",
+        "Settlement check against target budget per day"
+      ]
+    },
+    {
+      id: "transations-1",
+      category: "Audit",
+      title: "Recent Transactions Timeline",
+      subtitle: "Chronological transaction history with search, status filters, and instant edits.",
+      src: "/screenshots/transations-1.webp",
+      badge: "Transaction History",
+      features: [
+        "Filter by month, account, or verification status",
+        "Audit trail for debit, credit, and transfers",
+        "Seamless rollbacks and edit history"
+      ]
+    },
+    {
+      id: "audit-1",
+      category: "Audit",
+      title: "Double-Entry Balance Verification Check",
+      subtitle: "Signature double-entry check matching digital statement totals against physical wallet counts.",
+      src: "/screenshots/audit-1.webp",
+      badge: "Double-Entry Check",
+      features: [
+        "Identifies unlogged cash spend or duplicate charges",
+        "Calculates exact discrepancy amount in ₹ INR",
+        "Prevents hidden bank errors & forgotten expenses"
+      ]
+    }
+  ], []);
+
+  const [currentSlideIdx, setCurrentSlideIdx] = useState(0);
+  const [selectedLightBoxImg, setSelectedLightBoxImg] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const activeItem = useMemo(() => {
+    return screenshotsList[currentSlideIdx] || screenshotsList[0];
+  }, [currentSlideIdx, screenshotsList]);
+
+  // Auto-switch carousel slides every 4.5 seconds
+  useEffect(() => {
+    if (isPaused || selectedLightBoxImg) return;
+    const interval = setInterval(() => {
+      setCurrentSlideIdx((prev) => (prev + 1) % screenshotsList.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [isPaused, selectedLightBoxImg, screenshotsList.length]);
+
+  const handleNextSlide = () => {
+    setCurrentSlideIdx((prev) => (prev + 1) % screenshotsList.length);
+  };
+
+  const handlePrevSlide = () => {
+    setCurrentSlideIdx((prev) => (prev - 1 + screenshotsList.length) % screenshotsList.length);
+  };
 
   // --- Live Dashboard Simulator States ---
   const [balance, setBalance] = useState(18450);
@@ -322,6 +475,11 @@ export default function App() {
               </a>
             </li>
             <li>
+              <a href="#showcase" className="text-slate-500 hover:text-[#2a498c] transition-colors">
+                Screenshots
+              </a>
+            </li>
+            <li>
               <a href="#simulator" className="text-slate-500 hover:text-[#2a498c] transition-colors">
                 Live Sandbox
               </a>
@@ -361,86 +519,156 @@ export default function App() {
             </a>
           </div>
 
-          {/* Hamburger Menu (Mobile) */}
+          {/* Hamburger Toggle Button (Mobile) */}
           <button
             aria-label="Toggle navigation menu"
-            className="md:hidden flex flex-col justify-between w-6 h-4 focus:outline-none"
+            className="md:hidden p-2 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 text-slate-700 transition-colors focus:outline-none flex items-center justify-center"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            <span
-              className={`block h-0.5 w-full bg-slate-800 transition-transform duration-200 ${
-                mobileMenuOpen ? "rotate-45 translate-y-1.5" : ""
-              }`}
-            />
-            <span
-              className={`block h-0.5 w-full bg-slate-800 transition-opacity duration-200 ${
-                mobileMenuOpen ? "opacity-0" : ""
-              }`}
-            />
-            <span
-              className={`block h-0.5 w-full bg-slate-800 transition-transform duration-200 ${
-                mobileMenuOpen ? "-rotate-45 -translate-y-1.5" : ""
-              }`}
-            />
+            {mobileMenuOpen ? <X size={20} /> : (
+              <div className="w-5 h-4 flex flex-col justify-between">
+                <span className="block h-0.5 w-full bg-slate-800 rounded-full" />
+                <span className="block h-0.5 w-3/4 bg-slate-800 rounded-full ml-auto" />
+                <span className="block h-0.5 w-full bg-slate-800 rounded-full" />
+              </div>
+            )}
           </button>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Slide-Down Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-slate-200 z-40 shadow-md">
-            <div className="py-6 px-6 flex flex-col space-y-4">
-              <a
-                href="#features"
-                className="text-sm font-semibold text-slate-700 hover:text-[#2a498c] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Features
-              </a>
-              <a
-                href="#simulator"
-                className="text-sm font-semibold text-slate-700 hover:text-[#2a498c] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Live Sandbox
-              </a>
-              <a
-                href="#pricing"
-                className="text-sm font-semibold text-slate-700 hover:text-[#2a498c] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Pricing
-              </a>
-              <a
-                href="#faqs"
-                className="text-sm font-semibold text-slate-700 hover:text-[#2a498c] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                FAQ
-              </a>
-              <div className="border-t border-slate-100 pt-4 flex flex-col gap-3">
+          <div className="md:hidden fixed inset-x-0 top-[65px] bg-white/95 backdrop-blur-xl border-b border-slate-200/80 shadow-2xl z-40 animate-fadeIn max-h-[calc(100vh-70px)] overflow-y-auto">
+            <div className="p-5 space-y-4">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 block px-1">
+                Navigation
+              </span>
+
+              {/* Navigation Cards List */}
+              <div className="grid grid-cols-1 gap-2">
+                <a
+                  href="#features"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50/80 hover:bg-[#2a498c]/5 border border-slate-100 hover:border-[#2a498c]/25 transition-all group"
+                >
+                  <div className="p-2.5 rounded-xl bg-[#2a498c]/10 text-[#2a498c] group-hover:bg-[#2a498c] group-hover:text-white transition-colors">
+                    <Zap size={18} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="text-sm font-bold text-slate-800 group-hover:text-[#2a498c] transition-colors">
+                      Features
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      Reconciliation, split logic & ledger tools
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#2a498c] transition-colors" />
+                </a>
+
+                <a
+                  href="#showcase"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50/80 hover:bg-[#2a498c]/5 border border-slate-100 hover:border-[#2a498c]/25 transition-all group"
+                >
+                  <div className="p-2.5 rounded-xl bg-[#2a498c]/10 text-[#2a498c] group-hover:bg-[#2a498c] group-hover:text-white transition-colors">
+                    <Smartphone size={18} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="text-sm font-bold text-slate-800 group-hover:text-[#2a498c] transition-colors">
+                      Screenshots & App Tour
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      Interactive mobile & desktop UI preview
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#2a498c] transition-colors" />
+                </a>
+
+                <a
+                  href="#simulator"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50/80 hover:bg-[#2a498c]/5 border border-slate-100 hover:border-[#2a498c]/25 transition-all group"
+                >
+                  <div className="p-2.5 rounded-xl bg-[#2a498c]/10 text-[#2a498c] group-hover:bg-[#2a498c] group-hover:text-white transition-colors">
+                    <Calculator size={18} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="text-sm font-bold text-slate-800 group-hover:text-[#2a498c] transition-colors">
+                      Live Sandbox
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      Test real-time double-entry calculations
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#2a498c] transition-colors" />
+                </a>
+
+                <a
+                  href="#pricing"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50/80 hover:bg-[#2a498c]/5 border border-slate-100 hover:border-[#2a498c]/25 transition-all group"
+                >
+                  <div className="p-2.5 rounded-xl bg-[#2a498c]/10 text-[#2a498c] group-hover:bg-[#2a498c] group-hover:text-white transition-colors">
+                    <Banknote size={18} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="text-sm font-bold text-slate-800 group-hover:text-[#2a498c] transition-colors">
+                      Pricing Plans
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      Flexible plans for individuals & teams
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#2a498c] transition-colors" />
+                </a>
+
+                <a
+                  href="#faqs"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50/80 hover:bg-[#2a498c]/5 border border-slate-100 hover:border-[#2a498c]/25 transition-all group"
+                >
+                  <div className="p-2.5 rounded-xl bg-[#2a498c]/10 text-[#2a498c] group-hover:bg-[#2a498c] group-hover:text-white transition-colors">
+                    <FileText size={18} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="text-sm font-bold text-slate-800 group-hover:text-[#2a498c] transition-colors">
+                      FAQ & Help
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      Security details & common answers
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#2a498c] transition-colors" />
+                </a>
+              </div>
+
+              {/* Action CTA Section */}
+              <div className="border-t border-slate-100 pt-4 space-y-2.5">
                 <a
                   href="https://app.accountize.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="py-2 rounded border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5"
                   onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-2.5 rounded-xl border border-indigo-200 bg-indigo-50/90 text-indigo-700 hover:bg-indigo-100 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
                 >
-                  <Smartphone size={13} /> Install PWA
+                  <Smartphone size={15} /> Install Web App (PWA)
                 </a>
-                <a
-                  href="https://app.accountize.in/login"
-                  className="text-center py-2 text-sm font-semibold text-slate-700 hover:text-[#2a498c]"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Log In
-                </a>
-                <a
-                  href="https://app.accountize.in/login"
-                  className="text-center py-2.5 rounded bg-[#2a498c] text-white hover:bg-[#1e3362] text-xs font-semibold uppercase tracking-wider"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Start Free
-                </a>
+
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <a
+                    href="https://app.accountize.in/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <LogIn size={14} /> Log In
+                  </a>
+                  <a
+                    href="https://app.accountize.in/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2.5 rounded-xl bg-[#2a498c] hover:bg-[#1e3362] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md shadow-[#2a498c]/30 transition-all active:scale-98"
+                  >
+                    <Sparkles size={14} /> Start Free
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -811,6 +1039,178 @@ export default function App() {
               </p>
             </div>
           </div>
+        </section>
+
+        {/* APP SCREENSHOTS & TOUR SHOWCASE SECTION (Device Mockup Carousel) */}
+        <section className="py-16 sm:py-24 px-4 sm:px-6 bg-slate-950 text-white relative overflow-hidden border-b border-slate-800" id="showcase">
+          {/* Ambient Lighting FX */}
+          <div className="absolute top-1/3 -left-32 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] bg-[#2a498c]/25 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-1/4 -right-32 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] bg-indigo-600/15 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none" />
+
+          <div className="max-w-6xl mx-auto relative z-10">
+            {/* Section Header */}
+            <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+              <h2 className="text-2.5xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                Experience Accountize UI
+              </h2>
+              <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-slate-400 leading-relaxed px-2">
+                Watch actual screens auto-switch in real time inside our mobile preview frame. Tap or hover over any screen to pause & expand.
+              </p>
+            </div>
+
+            {/* Main Showcase (Device Frame + Side Info Card) */}
+            {activeItem && (
+              <div
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+                className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 items-center bg-slate-900/40 border border-slate-800/80 rounded-2xl sm:rounded-3xl p-4 sm:p-8 lg:p-10 backdrop-blur-md shadow-2xl transition-all"
+              >
+                {/* Left: Device Mockup Frame */}
+                <div className="lg:col-span-6 flex justify-center items-center py-2 sm:py-0">
+                  <div className="relative group max-w-full">
+                    {/* Outer Glow Halo */}
+                    <div className="absolute -inset-3 sm:-inset-4 bg-gradient-to-r from-indigo-500/20 via-[#2a498c]/30 to-blue-500/20 rounded-[44px] sm:rounded-[52px] blur-lg sm:blur-xl opacity-75 group-hover:opacity-100 transition-opacity duration-500" />
+
+                    {/* Smartphone Outer Shell */}
+                    <div className="relative w-[260px] xs:w-[290px] sm:w-[320px] lg:w-[340px] max-w-full bg-slate-900 border-[4px] sm:border-[6px] border-slate-700/80 rounded-[38px] sm:rounded-[44px] p-2 sm:p-2.5 shadow-2xl shadow-slate-950">
+                      {/* Dynamic Notch / Speaker Bar */}
+                      <div className="absolute top-3 sm:top-4 left-1/2 -translate-x-1/2 w-24 sm:w-28 h-3.5 sm:h-4 bg-slate-950 rounded-b-xl z-30 flex items-center justify-center gap-2">
+                        <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-slate-900 border border-slate-800" />
+                        <span className="w-6 sm:w-8 h-1 rounded-full bg-slate-800" />
+                      </div>
+
+                      {/* Screen Viewport */}
+                      <div
+                        onClick={() => setSelectedLightBoxImg(activeItem)}
+                        className="relative rounded-[28px] sm:rounded-[34px] overflow-hidden aspect-[9/18.5] max-h-[480px] xs:max-h-[540px] sm:max-h-none bg-white pt-5 sm:pt-6 pb-2 flex items-center justify-center group/img cursor-pointer"
+                      >
+                        <img
+                          key={activeItem.id}
+                          src={activeItem.src}
+                          alt={activeItem.title}
+                          className="w-full h-full object-cover object-top animate-fadeIn transition-transform duration-700 group-hover/img:scale-102"
+                        />
+
+                        {/* Lightbox Trigger Overlay */}
+                        <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-2 backdrop-blur-[2px]">
+                          <div className="p-2.5 sm:p-3 bg-indigo-600/90 text-white rounded-full shadow-lg transform scale-90 group-hover/img:scale-100 transition-transform duration-300">
+                            <Maximize2 size={18} className="sm:w-5 sm:h-5" />
+                          </div>
+                          <span className="text-[11px] sm:text-xs font-semibold text-white tracking-wide">Expand Screenshot</span>
+                        </div>
+                      </div>
+
+                      {/* Bottom Home Indicator Bar */}
+                      <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 w-28 sm:w-32 h-1 bg-slate-500/50 rounded-full z-30" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: Feature Highlights & Controls */}
+                <div className="lg:col-span-6 flex flex-col justify-between text-left space-y-4 sm:space-y-6">
+                  <div>
+                    <span className="text-[10px] sm:text-xs uppercase tracking-widest font-extrabold text-indigo-400 bg-indigo-950/90 border border-indigo-800/60 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full inline-block">
+                      {activeItem.badge}
+                    </span>
+                    <h3 className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-white mt-3 sm:mt-4 tracking-tight leading-tight">
+                      {activeItem.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-400 mt-2 sm:mt-3 leading-relaxed">
+                      {activeItem.subtitle}
+                    </p>
+                  </div>
+
+                  {/* Key Feature Bullet List */}
+                  <div className="space-y-2.5 sm:space-y-3 pt-2 sm:pt-3 border-t border-slate-800">
+                    <span className="text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider block mb-1">
+                      Key Highlights:
+                    </span>
+                    {activeItem.features.map((featText, fIdx) => (
+                      <div key={fIdx} className="flex items-start gap-2.5 sm:gap-3 text-xs sm:text-sm text-slate-300">
+                        <CheckCircle2 size={15} className="text-emerald-400 shrink-0 mt-0.5" />
+                        <span>{featText}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Carousel Controls Footer */}
+                  <div className="pt-4 sm:pt-6 border-t border-slate-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+                    {/* Index Dots */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto max-w-full py-1 no-scrollbar">
+                      {screenshotsList.map((_, dotIdx) => (
+                        <button
+                          key={dotIdx}
+                          onClick={() => setCurrentSlideIdx(dotIdx)}
+                          className={`h-2 rounded-full transition-all duration-300 ${
+                            currentSlideIdx === dotIdx ? "w-5 sm:w-6 bg-indigo-500" : "w-2 bg-slate-700 hover:bg-slate-600"
+                          }`}
+                          aria-label={`Go to slide ${dotIdx + 1}`}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Prev / Next Buttons */}
+                    <div className="flex items-center gap-2 ml-auto">
+                      <button
+                        onClick={handlePrevSlide}
+                        className="p-2 sm:p-2.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all active:scale-95 touch-manipulation"
+                        aria-label="Previous Screenshot"
+                      >
+                        <ChevronLeft size={16} className="sm:w-4.5 sm:h-4.5" />
+                      </button>
+                      <button
+                        onClick={handleNextSlide}
+                        className="p-2 sm:p-2.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all active:scale-95 touch-manipulation"
+                        aria-label="Next Screenshot"
+                      >
+                        <ChevronRight size={16} className="sm:w-4.5 sm:h-4.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* LIGHTBOX MODAL FOR EXPANDED PREVIEW */}
+          {selectedLightBoxImg && (
+            <div
+              className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-8 animate-fadeIn"
+              onClick={() => setSelectedLightBoxImg(null)}
+            >
+              <div
+                className="relative max-w-4xl w-full max-h-[92vh] bg-slate-900 border border-slate-800 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Lightbox Header */}
+                <div className="px-4 sm:px-5 py-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-indigo-400 bg-indigo-950 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded border border-indigo-800/60">
+                      {selectedLightBoxImg.badge || "Preview"}
+                    </span>
+                    <h3 className="text-xs sm:text-base font-bold text-white truncate max-w-[200px] sm:max-w-md">
+                      {selectedLightBoxImg.title}
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => setSelectedLightBoxImg(null)}
+                    className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                  >
+                    <X size={18} className="sm:w-5 sm:h-5" />
+                  </button>
+                </div>
+
+                {/* Lightbox Image Container */}
+                <div className="p-2 sm:p-4 flex-1 overflow-auto flex items-center justify-center bg-slate-950/70">
+                  <img
+                    src={selectedLightBoxImg.src}
+                    alt={selectedLightBoxImg.title}
+                    className="max-w-full max-h-[78vh] object-contain rounded-lg shadow-2xl border border-slate-800"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* DOUBLE-ENTRY SIMULATOR SECTION */}
@@ -1211,8 +1611,8 @@ export default function App() {
 
       {/* FOOTER */}
       <footer className="bg-slate-50 border-t border-slate-200 py-12 px-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 mb-8">
-          <div className="md:col-span-5">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-12 gap-6 sm:gap-8 mb-8">
+          <div className="col-span-2 sm:col-span-3 md:col-span-5 mb-2 sm:mb-0">
             <div className="flex items-center gap-2 mb-3">
               <img src="/logo.svg" alt="Accountize Logo" className="h-6 w-auto" />
               <span className="font-extrabold text-slate-800 text-base">Accountize</span>
@@ -1222,7 +1622,7 @@ export default function App() {
             </p>
           </div>
 
-          <div className="md:col-span-2 flex flex-col gap-2">
+          <div className="col-span-1 md:col-span-2 flex flex-col gap-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Product</h4>
             <a href="#features" className="text-xs text-slate-500 hover:text-[#2a498c]">
               Features
@@ -1235,7 +1635,7 @@ export default function App() {
             </a>
           </div>
 
-          <div className="md:col-span-2 flex flex-col gap-2">
+          <div className="col-span-1 md:col-span-2 flex flex-col gap-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Security</h4>
             <a
               href="#features"
@@ -1270,7 +1670,7 @@ export default function App() {
             </a>
           </div>
 
-          <div className="md:col-span-3 flex flex-col gap-2">
+          <div className="col-span-2 sm:col-span-1 md:col-span-3 flex flex-col gap-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Company</h4>
             <a
               href="#"
